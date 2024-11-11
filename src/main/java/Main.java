@@ -7,7 +7,16 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 public class Main {
-    public static Function<String, String> editMessage = message -> message.replaceAll("\\.", "") + " 👋🌍👋";
+    // Task Seven
+    //public static Function<String, String> editMessage = message -> message.replaceAll("\\.", "") + " 👋🌍👋";
+
+    // Task Eight
+    public static Function<String, String> editMessage = combinedResult -> {
+        if (Math.random() < 0.5) {
+            throw new RuntimeException("Exception occurred during async operation");
+        }
+        return combinedResult.replaceAll("\\.", "") + " 👋🌍👋";
+    };
 
     public static void main(String[] args) {
         // Task One
@@ -145,7 +154,43 @@ public class Main {
 //
 //        helloWorldCombinedFuture.join();
 
-        //Task Seven
+//        Task Seven
+//        Random randomNumber = new Random();
+//        int threadSleepTimeHello = randomNumber.nextInt(1000, 10000);
+//        int threadSleepTimeWorld = randomNumber.nextInt(1000, 10000);
+//
+//        CompletableFuture<String> helloFuture = CompletableFuture.supplyAsync(() -> {
+//
+//            try {
+//                Thread.sleep(threadSleepTimeHello);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return "Hello ...";
+//        });
+//
+//        CompletableFuture<String> worldFuture = CompletableFuture.supplyAsync(() -> {
+//            try {
+//                Thread.sleep(threadSleepTimeWorld);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return "... world!";
+//        });
+//
+//        CompletableFuture<String> combined = helloFuture
+//                .thenCombine(worldFuture, (f1, f2) -> f1 + f2);
+//
+//        CompletableFuture<Void> composed = combined
+//                .thenCompose(value -> CompletableFuture.supplyAsync(
+//                        () -> editMessage.apply(value)))
+//                .thenAccept(System.out::println);
+//
+//        composed.join();
+
+//      Task Seven
         Random randomNumber = new Random();
         int threadSleepTimeHello = randomNumber.nextInt(1000, 10000);
         int threadSleepTimeWorld = randomNumber.nextInt(1000, 10000);
@@ -177,6 +222,7 @@ public class Main {
         CompletableFuture<Void> composed = combined
                 .thenCompose(value -> CompletableFuture.supplyAsync(
                         () -> editMessage.apply(value)))
+                .exceptionally(value -> "There was an exception")
                 .thenAccept(System.out::println);
 
         composed.join();
