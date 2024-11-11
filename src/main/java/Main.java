@@ -4,8 +4,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 
 public class Main {
+    public static Function<String, String> editMessage = message -> message.replaceAll("\\.", "") + " 👋🌍👋";
+
     public static void main(String[] args) {
         // Task One
 //        CompletableFuture<Void> helloWorldFuture = CompletableFuture.runAsync(() ->{
@@ -111,6 +114,38 @@ public class Main {
 //    }
 
         // Task Six (after the task update...)
+//        Random randomNumber = new Random();
+//        int threadSleepTimeHello = randomNumber.nextInt(1000, 10000);
+//        int threadSleepTimeWorld = randomNumber.nextInt(1000, 10000);
+//
+//        CompletableFuture<String> helloFuture = CompletableFuture.supplyAsync(() -> {
+//
+//            try {
+//                Thread.sleep(threadSleepTimeHello);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return "Hello ";
+//        });
+//
+//        CompletableFuture<String> worldFuture = CompletableFuture.supplyAsync(() -> {
+//            try {
+//                Thread.sleep(threadSleepTimeWorld);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return "world!";
+//        });
+//
+//        CompletableFuture<Void> helloWorldCombinedFuture = helloFuture
+//                .thenCombine(worldFuture, (f1, f2) -> f1 + f2)
+//                .thenAccept(System.out::println);
+//
+//        helloWorldCombinedFuture.join();
+
+        //Task Seven
         Random randomNumber = new Random();
         int threadSleepTimeHello = randomNumber.nextInt(1000, 10000);
         int threadSleepTimeWorld = randomNumber.nextInt(1000, 10000);
@@ -123,7 +158,7 @@ public class Main {
                 e.printStackTrace();
             }
 
-            return "Hello ";
+            return "Hello ...";
         });
 
         CompletableFuture<String> worldFuture = CompletableFuture.supplyAsync(() -> {
@@ -133,13 +168,18 @@ public class Main {
                 e.printStackTrace();
             }
 
-            return "world!";
+            return "... world!";
         });
 
-        CompletableFuture<Void> helloWorldCombinedFuture = helloFuture
-                .thenCombine(worldFuture, (f1, f2) -> f1 + f2)
+        CompletableFuture<String> combined = helloFuture
+                .thenCombine(worldFuture, (f1, f2) -> f1 + f2);
+
+        CompletableFuture<Void> composed = combined
+                .thenCompose(value -> CompletableFuture.supplyAsync(
+                        () -> editMessage.apply(value)))
                 .thenAccept(System.out::println);
 
-        helloWorldCombinedFuture.join();
+        composed.join();
+
     }
 }
