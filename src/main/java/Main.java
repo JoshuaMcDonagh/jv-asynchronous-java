@@ -1,4 +1,9 @@
+import java.sql.Time;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
     public static void main(String[] args) {
@@ -40,11 +45,41 @@ public class Main {
 //        worldFuture.join();
 
         // Task Three
+//        CompletableFuture<String> helloFuture = CompletableFuture.supplyAsync(() -> {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (InterruptedException e) {
+//               e.printStackTrace();
+//            }
+//
+//            return "Hello ";
+//        });
+//
+//        CompletableFuture<String> worldFuture = CompletableFuture.supplyAsync(() -> {
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            return "world!";
+//        });
+//
+//        CompletableFuture<String> helloWorldCombinedFuture = helloFuture.thenCombine(worldFuture, (f1, f2) -> f1 + f2);
+//
+//        System.out.println(helloWorldCombinedFuture.join());
+
+        // Task Four
+        Random randomNumber = new Random();
+        int threadSleepTimeHello = randomNumber.nextInt(1000, 10000);
+        int threadSleepTimeWorld = randomNumber.nextInt(1000, 10000);
+
         CompletableFuture<String> helloFuture = CompletableFuture.supplyAsync(() -> {
+
             try {
-                Thread.sleep(3000);
+                Thread.sleep(threadSleepTimeHello);
             } catch (InterruptedException e) {
-               e.printStackTrace();
+                e.printStackTrace();
             }
 
             return "Hello ";
@@ -52,7 +87,7 @@ public class Main {
 
         CompletableFuture<String> worldFuture = CompletableFuture.supplyAsync(() -> {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(threadSleepTimeWorld);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -62,6 +97,16 @@ public class Main {
 
         CompletableFuture<String> helloWorldCombinedFuture = helloFuture.thenCombine(worldFuture, (f1, f2) -> f1 + f2);
 
-        System.out.println(helloWorldCombinedFuture.join());
+        try {
+            System.out.println(helloWorldCombinedFuture.get(10, TimeUnit.SECONDS));
+        } catch(InterruptedException | ExecutionException | TimeoutException e) {
+            System.out.println(
+                    "Threads did not return results in time.\n"
+                    +"Hello thread took: "
+                    +threadSleepTimeHello
+                    +"\nWorld thread took: "
+                    + threadSleepTimeWorld
+            );
+        }
     }
 }
